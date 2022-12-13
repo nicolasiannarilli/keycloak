@@ -43,6 +43,7 @@ import org.keycloak.models.UserCredentialModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.cache.UserCache;
 import org.keycloak.models.credential.PasswordUserCredentialModel;
+import org.keycloak.models.search.SearchQueryJson;
 import org.keycloak.models.utils.TimeBasedOTP;
 import org.keycloak.storage.StorageId;
 import org.keycloak.storage.UserStorageProvider;
@@ -377,6 +378,12 @@ public class BackwardsCompatibilityUserStorage implements UserLookupProvider, Us
     }
 
     @Override
+    public List<UserModel> searchForUser(SearchQueryJson query, RealmModel realm, int firstResult, int maxResults) {
+        // Assume that this is not supported
+        return Collections.emptyList();
+    }
+
+    @Override
     public void close() {
     }
 
@@ -414,5 +421,4 @@ public class BackwardsCompatibilityUserStorage implements UserLookupProvider, Us
             throw new AssertionError("Objects not equals");
         }
     }
-
 }

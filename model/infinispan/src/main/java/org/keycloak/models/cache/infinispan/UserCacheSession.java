@@ -53,6 +53,7 @@ import org.keycloak.models.cache.infinispan.events.UserFederationLinkUpdatedEven
 import org.keycloak.models.cache.infinispan.events.UserFullInvalidationEvent;
 import org.keycloak.models.cache.infinispan.events.UserUpdatedEvent;
 import org.keycloak.models.cache.infinispan.stream.InIdentityProviderPredicate;
+import org.keycloak.models.search.SearchQueryJson;
 import org.keycloak.models.utils.KeycloakModelUtils;
 import org.keycloak.models.utils.ReadOnlyUserModelDelegate;
 import org.keycloak.storage.CacheableStorageProviderModel;
@@ -605,6 +606,11 @@ public class UserCacheSession implements UserCache.Streams, OnCreateComponent, O
     }
 
     @Override
+    public Stream<UserModel> searchForUserStream(RealmModel realm, SearchQueryJson query, Integer firstResult, Integer maxResults)  {
+        return getDelegate().searchForUserStream(realm, query, firstResult, maxResults);
+    }
+
+    @Override
     public Stream<FederatedIdentityModel> getFederatedIdentitiesStream(RealmModel realm, UserModel user) {
         logger.tracev("getFederatedIdentities: {0}", user.getUsername());
 
@@ -912,5 +918,120 @@ public class UserCacheSession implements UserCache.Streams, OnCreateComponent, O
         if (getDelegate() instanceof OnCreateComponent) {
             ((OnCreateComponent) getDelegate()).onCreate(session, realm, model);
         }
+    }
+
+    @Override
+    public List<UserModel> getUsers(RealmModel realm, boolean includeServiceAccounts) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<UserModel> getUsers(RealmModel realm, int firstResult, int maxResults, boolean includeServiceAccounts) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<UserConsentModel> getConsents(RealmModel realm, String userId) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Set<FederatedIdentityModel> getFederatedIdentities(UserModel user, RealmModel realm) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public FederatedIdentityModel getFederatedIdentity(UserModel user, String socialProvider, RealmModel realm) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public UserModel getUserByFederatedIdentity(FederatedIdentityModel socialLink, RealmModel realm) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public UserModel getUserById(String id, RealmModel realm) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public UserModel getUserByUsername(String username, RealmModel realm) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public UserModel getUserByEmail(String email, RealmModel realm) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<UserModel> getUsers(RealmModel realm) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<UserModel> getUsers(RealmModel realm, int firstResult, int maxResults) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<UserModel> searchForUser(String search, RealmModel realm) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<UserModel> searchForUser(String search, RealmModel realm, int firstResult, int maxResults) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<UserModel> searchForUser(Map<String, String> params, RealmModel realm) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<UserModel> searchForUser(Map<String, String> params, RealmModel realm, int firstResult,
+            int maxResults) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<UserModel> getGroupMembers(RealmModel realm, GroupModel group) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<UserModel> getGroupMembers(RealmModel realm, GroupModel group, int firstResult, int maxResults) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<UserModel> searchForUserByUserAttribute(String attrName, String attrValue, RealmModel realm) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<UserModel> searchForUser(SearchQueryJson query, RealmModel realm, int firstResult, int maxResults) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

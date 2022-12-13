@@ -20,6 +20,7 @@ import org.keycloak.models.GroupModel;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.RoleModel;
 import org.keycloak.models.UserModel;
+import org.keycloak.models.search.SearchQueryJson;
 
 import java.util.Collections;
 import java.util.List;
@@ -126,6 +127,24 @@ public interface UserQueryProvider {
     @Deprecated
     default int getUsersCount(Map<String, String> params, RealmModel realm) {
         return (int) searchForUserStream(realm, params).count();
+    }
+
+    /**
+     * Returns the number of users that match the given filter parameters.
+     *
+     * @param realm  the realm
+     * @param query search filter in json
+     * @return number of users that match the given filters
+     */
+    default int getUsersCount(RealmModel realm, SearchQueryJson query) {
+        return getUsersCount(query, realm);
+    }
+    /**
+     * @deprecated Use {@link #getUsersCount(RealmModel, Set) getUsersCount} instead.
+     */
+    @Deprecated
+    default int getUsersCount(SearchQueryJson query, RealmModel realm) {
+        return (int) searchForUserStream(realm, query, null, null).count();
     }
 
     /**
@@ -552,6 +571,38 @@ public interface UserQueryProvider {
     }
 
     /**
+     * Search for user by json query.
+     *
+     * This method is used by the REST API when querying users.
+     *
+     * @param query a query containing the search parameters.
+     * @param realm a reference to the realm.
+     * @param firstResult first result to return. Ignored if negative.
+     * @param maxResults maximum number of results to return. Ignored if negative.
+     * @return a non-null {@link Stream} of users that match the search criteria.
+     *
+     * @deprecated Use {@link #searchForUserStream(RealmModel, Map, Integer, Integer) searchForUserStream} instead.
+     */
+    @Deprecated
+    List<UserModel> searchForUser(SearchQueryJson query, RealmModel realm, int firstResult, int maxResults);
+
+    /**
+     * Searches for user by json query. 
+     *
+     * This method is used by the REST API when querying users.
+     *
+     * @param realm a reference to the realm.
+     * @param query a query containing the search parameters.
+     * @param firstResult first result to return. Ignored if negative, zero, or {@code null}.
+     * @param maxResults maximum number of results to return. Ignored if negative or {@code null}.
+     * @return a non-null {@link Stream} of users that match the search criteria.
+     */
+    default Stream<UserModel> searchForUserStream(RealmModel realm, SearchQueryJson query, Integer firstResult, Integer maxResults) {
+        List<UserModel> value = this.searchForUser(query, realm, firstResult == null ? -1 : firstResult, maxResults == null ? -1 : maxResults);
+        return value != null ? value.stream() : Stream.empty();
+    }
+
+    /**
      * The {@link Streams} interface makes all collection-based methods in {@link UserQueryProvider} default by
      * providing implementations that delegate to the {@link Stream}-based variants instead of the other way around.
      * <p/>
@@ -667,5 +718,13 @@ public interface UserQueryProvider {
 
         @Override
         Stream<UserModel> searchForUserByUserAttributeStream(RealmModel realm, String attrName, String attrValue);
+
+        @Override
+        default List<UserModel> searchForUser(SearchQueryJson query, RealmModel realm, int firstResult, int maxResults) {
+            return this.searchForUserStream(realm, query, firstResult, maxResults).collect(Collectors.toList());
+        }
+
+        @Override
+        Stream<UserModel> searchForUserStream(RealmModel realm, SearchQueryJson query, Integer firstResult, Integer maxResults);
     }
 }
