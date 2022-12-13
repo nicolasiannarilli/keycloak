@@ -17,6 +17,10 @@
 
 package org.keycloak.testsuite.admin;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.graphene.page.Page;
@@ -46,6 +50,7 @@ import org.keycloak.models.PasswordPolicy;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.credential.OTPCredentialModel;
 import org.keycloak.models.credential.PasswordCredentialModel;
+import org.keycloak.models.search.SearchQueryBuilder;
 import org.keycloak.models.utils.KeycloakModelUtils;
 import org.keycloak.models.utils.ModelToRepresentation;
 import org.keycloak.representations.AccessToken;
@@ -759,6 +764,45 @@ public class UserTest extends AbstractAdminTest {
         assertEquals(1, users.size());
 
         users = realm.users().search("user", true);
+        assertEquals(0, users.size());
+    }
+    
+    @Test
+    public void searchByQuerySimple() throws JsonProcessingException {
+        createUsers();
+
+        UserRepresentation user = new UserRepresentation();
+        user.setUsername("username11");
+
+        createUser(user);
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<UserRepresentation> users = realm.users().searchJson(mapper.writeValueAsString(SearchQueryBuilder.equals("username", "username1")), null, null, false);
+        assertEquals(1, users.size());
+        
+        users = realm.users().searchJson(mapper.writeValueAsString(SearchQueryBuilder.equals("email", "user1@localhost")), null, null, false);
+        assertEquals(1, users.size());
+
+        users = realm.users().searchJson(mapper.writeValueAsString(SearchQueryBuilder.like("email", "user*@localhost")), null, null, false);
+        assertEquals(9, users.size());
+    }
+    
+    @Test
+    public void searchByQueryComplex() throws JsonProcessingException {
+        createUsers();
+
+        UserRepresentation user = new UserRepresentation();
+        user.setUsername("username11");
+
+        createUser(user);
+        
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<UserRepresentation> users = realm.users().searchJson(mapper.writeValueAsString(SearchQueryBuilder.or(SearchQueryBuilder.equals("username", "username1"), SearchQueryBuilder.equals("username", "username2"))), null, null, false);
+        assertEquals(2, users.size());
+        
+        users = realm.users().searchJson(mapper.writeValueAsString(SearchQueryBuilder.and(SearchQueryBuilder.equals("username", "username1"), SearchQueryBuilder.equals("username", "username2"))), null, null, false);
         assertEquals(0, users.size());
     }
 
